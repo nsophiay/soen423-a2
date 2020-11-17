@@ -1,0 +1,26 @@
+module DSMSApp{
+
+	struct Date{
+	
+		short Day;
+		short Month;
+		short Year;
+	
+	};
+
+	interface DSMS{
+	
+		boolean addItem(in string managerID, in string itemID, in string itemName, in short quantity, in double price);
+		boolean removeItem(in string managerID, in string itemID, in short quantity);
+		string listItemAvailability(in string managerID);
+		
+		double purchaseItem(in string customerID, in string itemID, in Date dateOfPurchase);
+		string findItem(in string customerID, in string itemName);
+		boolean returnItem(in string customerID, in string itemID, in Date dateOfReturn);
+		boolean exchangeItem(in string customerID, in string newItemID, in string oldItemID);
+
+		oneway void shutdown();
+	
+	};
+
+};
