@@ -109,7 +109,7 @@ class DSMSImpl extends DSMSPOA{
 	////////////////////////
 
 
-	public boolean addItem(String managerID, String itemID, String itemName, short quantity, double price) {
+	public String addItem(String managerID, String itemID, String itemName, short quantity, double price) {
 
 		boolean status = true;
 
@@ -145,11 +145,11 @@ class DSMSImpl extends DSMSPOA{
 			}}
 
 
-		return status;
+		return status?"true":"false";
 	}
 
 
-	public boolean removeItem(String managerID, String itemID, short quantity) {
+	public String removeItem(String managerID, String itemID, short quantity) {
 
 		boolean status = true;
 
@@ -197,7 +197,7 @@ class DSMSImpl extends DSMSPOA{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}}
-		return status;
+		return status?"true":"false";
 
 	}
 
@@ -238,9 +238,11 @@ class DSMSImpl extends DSMSPOA{
 		}
 		return true;
 	}
+	
 
-	public double purchaseItem(String customerID, String ID, DSMSApp.Date dateOfPurchase) {
+	public String purchaseItem(String customerID, String ID, String dop) {
 
+		DSMSApp.Date dateOfPurchase = DSMSApp.Date.convertToDate(dop);
 		String itemID = ID.substring(0,6);
 		String store = itemID.substring(0,2);
 		Runnable r = () -> {checkAvailability(itemID);};
@@ -256,7 +258,7 @@ class DSMSImpl extends DSMSPOA{
 
 		// If the item is not from the store, send a request to the right server
 		if(!store.equals(storeName)) {
-			return Double.parseDouble(sendPurchaseRequest(store, customerID, ID, dateOfPurchase.Day, dateOfPurchase.Month, dateOfPurchase.Year));
+			return sendPurchaseRequest(store, customerID, ID, dateOfPurchase.Day, dateOfPurchase.Month, dateOfPurchase.Year);
 		}
 
 		// Check if item exists in the store
@@ -298,7 +300,7 @@ class DSMSImpl extends DSMSPOA{
 
 
 				}
-				else { status = false; return -1; }; // Ask the user whether they want to be added to the wait list
+				else { status = false; return "-1"; }; // Ask the user whether they want to be added to the wait list
 			}
 		} else{
 			System.out.println("Item does not exist.");
@@ -319,8 +321,8 @@ class DSMSImpl extends DSMSPOA{
 			}
 		}
 
-		if(status) return i.price; // Returns price if successful
-		else return 0.0; // Returns 0 if failed
+		if(status) return new String(i.price+""); // Returns price if successful
+		else return "0.0"; // Returns 0 if failed
 
 	}
 
@@ -335,8 +337,9 @@ class DSMSImpl extends DSMSPOA{
 						System.out.println("Item " + itemID + " is now in stock");
 						String customerID = item.waitingList.poll();
 						System.out.println(customerID.substring(0,7) + " is no longer in the waiting list for item " + itemID);
-
-						if(purchaseItem(customerID, itemID, DSMSApp.Date.getCurrentDate()) > 0) {
+						DSMSApp.Date currentDate = DSMSApp.Date.getCurrentDate();
+						
+						if(Integer.parseInt(purchaseItem(customerID, itemID, currentDate.toString2())) > 0) {
 							System.out.println(customerID.substring(0,7) + " has purchased " + itemID);
 						}
 						else {
@@ -395,7 +398,9 @@ class DSMSImpl extends DSMSPOA{
 	}
 
 
-	public double returnItem(String customerID, String itemID, DSMSApp.Date dateOfReturn) {
+	public String returnItem(String customerID, String itemID, String dop) {
+		
+		DSMSApp.Date dateOfReturn = DSMSApp.Date.convertToDate(dop);
 		boolean status = true;
 		Item i = null;
 
@@ -419,7 +424,7 @@ class DSMSImpl extends DSMSPOA{
 							i.quantity++;
 							i.IDOfBuyer.remove(customerID);
 							//i.dateOfPurchase = null;
-							return i.price;
+							return new String(i.price+"");
 						}
 						else{
 							status = false;
@@ -442,7 +447,7 @@ class DSMSImpl extends DSMSPOA{
 
 			if(res == 0.0){
 				status=false;
-			} else return res;
+			} else return new String(res+"");
 		}
 		else {
 			status = false;
@@ -463,11 +468,11 @@ class DSMSImpl extends DSMSPOA{
 				e.printStackTrace();
 			}}
 
-		return 0.0; // Returns 0 if failed
+		return "0.0"; // Returns 0 if failed
 	}
 
 
-	public boolean exchangeItem(String customerID, String newItemID, String oldItemID) {
+	public String exchangeItem(String customerID, String newItemID, String oldItemID) {
 
 		double budget = 0;
 		if(customerID.length() > 7) budget = Double.parseDouble(customerID.substring(7));
@@ -485,10 +490,10 @@ class DSMSImpl extends DSMSPOA{
 		if(pStatus.trim().equals("true") && rStatus.trim().matches("[0-9]{1,2}-[0-9]{1,2}-[0-9]{4}")) {
 			String[] d = rStatus.trim().split("-");
 			DSMSApp.Date returnDate = new DSMSApp.Date(Short.parseShort(d[0]),Short.parseShort(d[1]),Short.parseShort(d[2]));
-			returnItem(customerIDactual, oldItemID, returnDate);
-			purchaseItem(customerID, newItemID, currentDate);
-			return true;
-		} else return false;
+			returnItem(customerIDactual, oldItemID, returnDate.toString2());
+			purchaseItem(customerID, newItemID, currentDate.toString2());
+			return "true";
+		} else return "false";
 
 	}
 
@@ -705,8 +710,7 @@ class DSMSImpl extends DSMSPOA{
 
 					DSMSApp.Date d = new DSMSApp.Date(Short.parseShort(s[2]), Short.parseShort(s[3]), Short.parseShort(s[4]));
 
-
-					double a = purchaseItem(s[0], s[1], d);
+					double a = Double.parseDouble(purchaseItem(s[0], s[1], d.toString2()));
 
 					serverResponse = new String("" + a).getBytes();
 
@@ -726,7 +730,7 @@ class DSMSImpl extends DSMSPOA{
 					String[] s = rq.split(",");
 
 
-					double a = returnItem(s[0], s[1], DSMSApp.Date.getCurrentDate());
+					double a = Double.parseDouble(returnItem(s[0], s[1], DSMSApp.Date.getCurrentDate().toString2()));
 					serverResponse = new String("" + a).getBytes();
 
 				}

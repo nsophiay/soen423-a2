@@ -44,10 +44,10 @@ public abstract class DSMSPOA extends org.omg.PortableServer.Servant
          String itemName = in.read_string ();
          short quantity = in.read_short ();
          double price = in.read_double ();
-         boolean $result = false;
+         String $result = "false";
          $result = this.addItem (managerID, itemID, itemName, quantity, price);
          out = $rh.createReply();
-         out.write_boolean ($result);
+         out.write_string ($result);
          break;
        }
 
@@ -56,10 +56,10 @@ public abstract class DSMSPOA extends org.omg.PortableServer.Servant
          String managerID = in.read_string ();
          String itemID = in.read_string ();
          short quantity = in.read_short ();
-         boolean $result = false;
+         String $result = "false";
          $result = this.removeItem (managerID, itemID, quantity);
          out = $rh.createReply();
-         out.write_boolean ($result);
+         out.write_string ($result);
          break;
        }
 
@@ -77,11 +77,11 @@ public abstract class DSMSPOA extends org.omg.PortableServer.Servant
        {
          String customerID = in.read_string ();
          String itemID = in.read_string ();
-         DSMSApp.Date dateOfPurchase = DSMSApp.DateHelper.read (in);
-         double $result = (double)0;
+         String dateOfPurchase = in.read_string ();
+         String $result = "0";
          $result = this.purchaseItem (customerID, itemID, dateOfPurchase);
          out = $rh.createReply();
-         out.write_double ($result);
+         out.write_string ($result);
          break;
        }
 
@@ -100,11 +100,11 @@ public abstract class DSMSPOA extends org.omg.PortableServer.Servant
        {
          String customerID = in.read_string ();
          String itemID = in.read_string ();
-         DSMSApp.Date dateOfReturn = DSMSApp.DateHelper.read (in);
-         double $result = (double)0;
+         String dateOfReturn = in.read_string ();
+         String $result = "0";
          $result = this.returnItem (customerID, itemID, dateOfReturn);
          out = $rh.createReply();
-         out.write_double ($result);
+         out.write_string ($result);
          break;
        }
 
@@ -113,10 +113,10 @@ public abstract class DSMSPOA extends org.omg.PortableServer.Servant
          String customerID = in.read_string ();
          String newItemID = in.read_string ();
          String oldItemID = in.read_string ();
-         boolean $result = false;
+         String $result = "false";
          $result = this.exchangeItem (customerID, newItemID, oldItemID);
          out = $rh.createReply();
-         out.write_boolean ($result);
+         out.write_string ($result);
          break;
        }
 

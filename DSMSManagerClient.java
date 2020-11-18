@@ -67,7 +67,7 @@ public class DSMSManagerClient {
 
 		boolean status = false;
 
-		status = dsmsServant.addItem(this.managerID, itemID, itemName, quantity, price);
+		status = (dsmsServant.addItem(this.managerID, itemID, itemName, quantity, price)).equals("true");
 
 
 		// Write to file
@@ -92,7 +92,7 @@ public class DSMSManagerClient {
 	public boolean remove(String itemID, short quantity) {
 		boolean status = false;
 
-		status = dsmsServant.removeItem(this.managerID, itemID, quantity);
+		status = dsmsServant.removeItem(this.managerID, itemID, quantity).equals("true");
 
 		// Write to file
 		synchronized(log) {

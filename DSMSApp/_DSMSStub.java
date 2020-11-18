@@ -10,7 +10,7 @@ package DSMSApp;
 public class _DSMSStub extends org.omg.CORBA.portable.ObjectImpl implements DSMSApp.DSMS
 {
 
-  public boolean addItem (String managerID, String itemID, String itemName, short quantity, double price)
+  public String addItem (String managerID, String itemID, String itemName, short quantity, double price)
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
@@ -21,7 +21,7 @@ public class _DSMSStub extends org.omg.CORBA.portable.ObjectImpl implements DSMS
                 $out.write_short (quantity);
                 $out.write_double (price);
                 $in = _invoke ($out);
-                boolean $result = $in.read_boolean ();
+                String $result = $in.read_string ();
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();
@@ -34,7 +34,7 @@ public class _DSMSStub extends org.omg.CORBA.portable.ObjectImpl implements DSMS
             }
   } // addItem
 
-  public boolean removeItem (String managerID, String itemID, short quantity)
+  public String removeItem (String managerID, String itemID, short quantity)
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
@@ -43,7 +43,7 @@ public class _DSMSStub extends org.omg.CORBA.portable.ObjectImpl implements DSMS
                 $out.write_string (itemID);
                 $out.write_short (quantity);
                 $in = _invoke ($out);
-                boolean $result = $in.read_boolean ();
+                String $result = $in.read_string ();
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();
@@ -76,16 +76,16 @@ public class _DSMSStub extends org.omg.CORBA.portable.ObjectImpl implements DSMS
             }
   } // listItemAvailability
 
-  public double purchaseItem (String customerID, String itemID, DSMSApp.Date dateOfPurchase)
+  public String purchaseItem (String customerID, String itemID, String dateOfPurchase)
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
                 org.omg.CORBA.portable.OutputStream $out = _request ("purchaseItem", true);
                 $out.write_string (customerID);
                 $out.write_string (itemID);
-                DSMSApp.DateHelper.write ($out, dateOfPurchase);
+                $out.write_string (dateOfPurchase);
                 $in = _invoke ($out);
-                double $result = $in.read_double ();
+                String $result = $in.read_string ();
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();
@@ -119,16 +119,16 @@ public class _DSMSStub extends org.omg.CORBA.portable.ObjectImpl implements DSMS
             }
   } // findItem
 
-  public double returnItem (String customerID, String itemID, DSMSApp.Date dateOfReturn)
+  public String returnItem (String customerID, String itemID, String dateOfReturn)
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
                 org.omg.CORBA.portable.OutputStream $out = _request ("returnItem", true);
                 $out.write_string (customerID);
                 $out.write_string (itemID);
-                DSMSApp.DateHelper.write ($out, dateOfReturn);
+                $out.write_string (dateOfReturn);
                 $in = _invoke ($out);
-                double $result = $in.read_double ();
+                String $result = $in.read_string ();
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();
@@ -141,7 +141,7 @@ public class _DSMSStub extends org.omg.CORBA.portable.ObjectImpl implements DSMS
             }
   } // returnItem
 
-  public boolean exchangeItem (String customerID, String newItemID, String oldItemID)
+  public String exchangeItem (String customerID, String newItemID, String oldItemID)
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
@@ -150,7 +150,7 @@ public class _DSMSStub extends org.omg.CORBA.portable.ObjectImpl implements DSMS
                 $out.write_string (newItemID);
                 $out.write_string (oldItemID);
                 $in = _invoke ($out);
-                boolean $result = $in.read_boolean ();
+                String $result = $in.read_string ();
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();

@@ -281,7 +281,8 @@ public class DSMSDriver {
 
 				// Run requested operation in a thread
 				Runnable r = () -> {
-					int status = temp.purchase(itemID, d); // Attempt to purchase item
+					
+					int status = temp.purchase(itemID, d.toString2()); // Attempt to purchase item
 					if(status == -1) { // If -1 is returned, the item is not in stock.
 
 						// Ask the user if they would like to be added to the waiting list
@@ -289,7 +290,7 @@ public class DSMSDriver {
 						String answer = in.nextLine();
 
 						if(answer.equalsIgnoreCase("yes")) {
-							temp.purchase(itemID+" wait", d); // The server will now wait until the item is in stock to allow the purchase
+							temp.purchase(itemID+" wait", d.toString2()); // The server will now wait until the item is in stock to allow the purchase
 						}
 
 					}
@@ -363,7 +364,7 @@ public class DSMSDriver {
 				if(customers.containsKey(ID)) {
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						if(customers.get(ID).returnItem(itemID, d)) {
+						if(customers.get(ID).returnItem(itemID, d.toString2())) {
 							System.out.println("Item successfully returned");
 						}
 						else {
@@ -382,7 +383,7 @@ public class DSMSDriver {
 					customers.put(ID, newCC);
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						newCC.returnItem(itemID, d);
+						newCC.returnItem(itemID, d.toString2());
 						synchronized(lock) {
 							lock.notify();
 							begin = true;

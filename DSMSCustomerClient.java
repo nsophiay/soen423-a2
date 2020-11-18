@@ -64,13 +64,14 @@ public class DSMSCustomerClient {
 
 	}
 
-	public int purchase(String itemID, DSMSApp.Date dateOfPurchase) {
+	public int purchase(String itemID, String dop) {
 
+		DSMSApp.Date dateOfPurchase = DSMSApp.Date.convertToDate(dop);
 		int status = 1;
 
 		String custAndBudget = this.customerID + budget;
 
-		double price = dsmsServant.purchaseItem(custAndBudget, itemID, dateOfPurchase);
+		double price = Double.parseDouble(dsmsServant.purchaseItem(custAndBudget, itemID, dop));
 
 		if(price > 0 && this.budget > price) { // If purchase was successful, subtract from budget
 			this.budget -= price;
@@ -131,10 +132,10 @@ public class DSMSCustomerClient {
 		return !nothingFound;
 	}
 
-	public boolean returnItem(String itemID, DSMSApp.Date dateOfReturn) {
+	public boolean returnItem(String itemID, String dateOfReturn) {
 
 		boolean status = true;
-		double price = dsmsServant.returnItem(this.customerID, itemID, dateOfReturn);
+		double price = Double.parseDouble(dsmsServant.returnItem(this.customerID, itemID, dateOfReturn));
 		if(price > 0) this.budget+=price;
 		else status = false;
 
@@ -159,7 +160,7 @@ public class DSMSCustomerClient {
 		boolean status = true;
 		String custAndBudget = this.customerID + budget;
 
-		status = dsmsServant.exchangeItem(custAndBudget, newItemID, oldItemID);
+		status = dsmsServant.exchangeItem(custAndBudget, newItemID, oldItemID).equals("true");
 
 
 		// Write to file

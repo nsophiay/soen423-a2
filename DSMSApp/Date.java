@@ -31,6 +31,35 @@ public final class Date implements org.omg.CORBA.portable.IDLEntity
 	  return Day + "-" + Month + "-" + Year;
   }
   
+  public String toString2() {
+	  return "" + Day + Month + Year;
+  }
+  
+  public static DSMSApp.Date convertToDate(String dop){
+		short day, month, year;
+
+		if(dop.matches("[0-9][0-9][0-9]{4}")) {
+			day = Short.parseShort(dop.substring(0,1));
+			month = Short.parseShort(dop.substring(1,2));
+			year = Short.parseShort(dop.substring(2));
+		}else if(dop.matches("[0-9]{2}[0-9][0-9]{4}")) {
+			day = Short.parseShort(dop.substring(0,2));
+			month = Short.parseShort(dop.substring(2,3));
+			year = Short.parseShort(dop.substring(3));
+		}else if(dop.matches("[0-9][0-9]{2}[0-9]{4}")) {
+			day = Short.parseShort(dop.substring(0,1));
+			month = Short.parseShort(dop.substring(1,3));
+			year = Short.parseShort(dop.substring(3));
+		}else{
+			day = Short.parseShort(dop.substring(0,2));
+			month = Short.parseShort(dop.substring(2,4));
+			year = Short.parseShort(dop.substring(4));
+		}
+		
+		DSMSApp.Date dateOfPurchase = new DSMSApp.Date(day, month, year);
+		return dateOfPurchase;
+	}
+  
   public static Date getCurrentDate() {
 		Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
 		java.util.Date date = calendar.getTime();
