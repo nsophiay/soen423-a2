@@ -1,4 +1,4 @@
-package a2;
+
 
 import java.util.Calendar;
 import java.util.Date;
@@ -103,6 +103,8 @@ public class DSMSDriver {
 
 
 	public static void main(String[] args) {
+		
+		DSMSServer.main(args);
 
 		// Keep track of managers and clients created
 		HashMap<String, DSMSManagerClient> managers = new HashMap<String, DSMSManagerClient>();
