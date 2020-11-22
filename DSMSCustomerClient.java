@@ -197,7 +197,7 @@ public class DSMSCustomerClient {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}}
-		return status?"success,"+newItemID+","+oldItemID:"failure,"+newItemID+","+oldItemID;
+		return status?"success,"+oldItemID+","+newItemID:"failure,"+newItemID+","+oldItemID;
 	}
 
 
