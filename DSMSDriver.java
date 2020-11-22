@@ -1,15 +1,7 @@
+package a2;
 
-
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
-
-import org.omg.CosNaming.*;
-import org.omg.CosNaming.NamingContextPackage.*;
-import org.omg.CORBA.*;
-
-import DSMSApp.*;
 
 public class DSMSDriver {
 	static boolean begin = true;
@@ -144,7 +136,11 @@ public class DSMSDriver {
 
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						System.out.println((managers.get(ID).add(itemID, itemName, quantity, price))?"Item successfully added":"Item could not be added");
+						
+						String s = managers.get(ID).add(itemID, itemName, quantity, price);
+						String[] resp = s.split(",");
+						
+						System.out.println(resp[0].equals("success")?"Item successfully added":"Item could not be added");
 						// Make sure that the console does not print out of order
 						synchronized(lock) {
 							lock.notify();
@@ -162,7 +158,11 @@ public class DSMSDriver {
 
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						System.out.println((newMC.add(itemID, itemName, quantity, price))?"Item successfully added":"Item could not be added");
+						
+						String s = newMC.add(itemID, itemName, quantity, price);
+						String[] resp = s.split(",");
+						
+						System.out.println(resp[0].equals("success")?"Item successfully added":"Item could not be added");
 						// Make sure that the console does not print out of order
 						synchronized(lock) {
 							lock.notify();
@@ -189,7 +189,11 @@ public class DSMSDriver {
 				if(managers.containsKey(ID)) {
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						if(managers.get(ID).remove(itemID, quantity)) System.out.println("Item successfully removed");
+						
+						String s = managers.get(ID).remove(itemID, quantity);
+						String[] resp = s.split(",");
+						
+						if(resp[0].equals("success")) System.out.println("Item successfully removed");
 						else System.out.println("Item could not be removed");
 						synchronized(lock) {
 							lock.notify();
@@ -205,7 +209,11 @@ public class DSMSDriver {
 					managers.put(ID, newMC);
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						if(newMC.remove(itemID, quantity)) System.out.println("Item successfully removed");
+						
+						String s = newMC.remove(itemID, quantity);
+						String[] resp = s.split(",");
+						
+						if(resp[0].equals("success")) System.out.println("Item successfully removed");
 						else System.out.println("Item could not be removed");
 						synchronized(lock) {
 							lock.notify();
@@ -284,7 +292,17 @@ public class DSMSDriver {
 				// Run requested operation in a thread
 				Runnable r = () -> {
 					
-					int status = temp.purchase(itemID, d.toString2()); // Attempt to purchase item
+					int status = 0;
+					String s = temp.purchase(itemID, d.toString2()); // Attempt to purchase item
+					String[] resp = s.split(",");
+					
+					if(resp[0].equals("success") && resp[resp.length-1].equals("Y")) {
+						status = -1;
+					}
+					else if(resp[0].equals("success") && resp[resp.length-1].equals("N")) {
+						status = 1;
+					}
+					
 					if(status == -1) { // If -1 is returned, the item is not in stock.
 
 						// Ask the user if they would like to be added to the waiting list
@@ -292,7 +310,7 @@ public class DSMSDriver {
 						String answer = in.nextLine();
 
 						if(answer.equalsIgnoreCase("yes")) {
-							temp.purchase(itemID+" wait", d.toString2()); // The server will now wait until the item is in stock to allow the purchase
+							temp.purchase(itemID+"Y", d.toString2()); // The server will now wait until the item is in stock to allow the purchase
 						}
 
 					}
@@ -314,7 +332,7 @@ public class DSMSDriver {
 				if(customers.containsKey(ID)) {
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						if(!(customers.get(ID).find(itemName))) {
+						if((customers.get(ID).find(itemName)).equals("failure()")) {
 							System.out.println("No item was found.");
 						}
 						synchronized(lock) {
@@ -330,7 +348,7 @@ public class DSMSDriver {
 					customers.put(ID, newCC);
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						if(!(customers.get(ID).find(itemName))) {
+						if((customers.get(ID).find(itemName)).equals("failure()")) {
 							System.out.println("No item was found.");
 						}
 						synchronized(lock) {
@@ -366,7 +384,11 @@ public class DSMSDriver {
 				if(customers.containsKey(ID)) {
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						if(customers.get(ID).returnItem(itemID, d.toString2())) {
+						
+						String s = customers.get(ID).returnItem(itemID, d.toString2());
+						String[] resp = s.split(",");
+						
+						if(resp[0].equals("success")) {
 							System.out.println("Item successfully returned");
 						}
 						else {
@@ -407,7 +429,11 @@ public class DSMSDriver {
 				if(customers.containsKey(ID)) {
 					// Run requested operation in a thread
 					Runnable r = () -> {
-						if(customers.get(ID).exchangeItem(ID, newItemID, oldItemID)) {
+						
+						String s = customers.get(ID).exchangeItem(ID, newItemID, oldItemID);
+						String[] resp = s.split(",");
+						
+						if(resp[0].equals("success")) {
 							System.out.println("Item successfully exchanged");
 						}
 						else {
@@ -446,7 +472,10 @@ public class DSMSDriver {
 					// Run requested operation in a thread
 					Runnable r = () -> {
 
-						if(customers.get(ID).exchangeItem(ID, newItemID, oldItemID)) {
+						String s = customers.get(ID).exchangeItem(ID, newItemID, oldItemID);
+						String[] resp = s.split(",");
+						
+						if(resp[0].equals("success")) {
 							System.out.println(ID + " has successfully exchanged " + oldItemID + " for " + newItemID);
 						}
 						else {
@@ -460,8 +489,11 @@ public class DSMSDriver {
 					Thread operation = new Thread(r);
 
 					Runnable r2 = () -> {
-
-						if(customers.get(secondCustomer).exchangeItem(secondCustomer, newItemID, oldItemID)) {
+						
+						String s = customers.get(secondCustomer).exchangeItem(secondCustomer, newItemID, oldItemID);
+						String[] resp = s.split(",");
+						
+						if(resp[0].equals("success")) {
 							System.out.println(secondCustomer + " has successfully exchanged " + oldItemID + " for " + newItemID);
 						}
 						else {

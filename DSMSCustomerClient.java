@@ -1,17 +1,13 @@
 package a2;
 
-import java.io.File;
+import java.io.File; 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
 import org.omg.CORBA.*;
-import org.omg.CosNaming.*;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
-import org.omg.CosNaming.NamingContextPackage.*;
-import org.omg.PortableServer.POA;
-import org.omg.PortableServer.POAHelper;
 
 import DSMSApp.DSMS;
 import DSMSApp.DSMSHelper;
@@ -64,7 +60,7 @@ public class DSMSCustomerClient {
 
 	}
 
-	public int purchase(String itemID, String dop) {
+	public String purchase(String itemID, String dop) {
 
 		DSMSApp.Date dateOfPurchase = DSMSApp.Date.convertToDate(dop);
 		int status = 1;
@@ -97,23 +93,43 @@ public class DSMSCustomerClient {
 				e.printStackTrace();
 			}
 		}
-		return status;
+		
+		String onWaitlist = "N";
+		if(status == -1) onWaitlist = "Y";
+		return (status==1||status==-1)?"success,"+itemID+","+onWaitlist:"failure,"+itemID+","+onWaitlist;
 	}
 
-	public boolean find(String itemName) {
+	public String find(String itemName) {
 
 		boolean nothingFound = true;
 		String found = dsmsServant.findItem(this.customerID,itemName);
+		String result = "", status = "failure";
+		
 		if(!found.equals("")) {
+			
 			String[] founds = found.split(",");
 			for(String i : founds) {
+				
 				i.trim();
 
-				//if(i.matches("[\\s\\[\\]]*[0-9A-Za-z\\s.]+")) {
 				System.out.println(i);
 				nothingFound = false;
-				//}
+
 			}
+			
+			if(!nothingFound) status = "success"; // Something was found
+			
+			result = status + "(";
+			
+			for(int i = 0; i < founds.length; i++) {
+				String[] parse = founds[i].split("\\s");
+				result += "\n" + parse[0].substring(1)
+						+ "," + itemName + ","
+						+ parse[1] + "," + parse[2];
+			}
+			result += ")";
+		}else {
+			result="failure()";
 		}
 
 		// Write to file
@@ -129,10 +145,11 @@ public class DSMSCustomerClient {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}}
-		return !nothingFound;
+		
+		return result;
 	}
 
-	public boolean returnItem(String itemID, String dateOfReturn) {
+	public String returnItem(String itemID, String dateOfReturn) {
 
 		boolean status = true;
 		double price = Double.parseDouble(dsmsServant.returnItem(this.customerID, itemID, dateOfReturn));
@@ -151,11 +168,13 @@ public class DSMSCustomerClient {
 				writeUser.close();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}}
-		return status;
+			}
+		}
+		
+		return status?"success,"+itemID:"failure,"+itemID;
 	}
 
-	public boolean exchangeItem(String customerID, String newItemID, String oldItemID) {
+	public String exchangeItem(String customerID, String newItemID, String oldItemID) {
 
 		boolean status = true;
 		String custAndBudget = this.customerID + budget;
@@ -178,7 +197,7 @@ public class DSMSCustomerClient {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}}
-		return status;
+		return status?"success,"+newItemID+","+oldItemID:"failure,"+newItemID+","+oldItemID;
 	}
 
 

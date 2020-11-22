@@ -273,7 +273,7 @@ class DSMSImpl extends DSMSPOA{
 					System.out.println("This user has already purchased an item from this store.");
 					status = false;
 				}
-				else if(ID.length() > 6 && ID.substring(7).equals("wait")) { // Handle waiting list
+				else if(ID.length() > 6 && ID.substring(7).equals("Y")) { // Handle waiting list
 					synchronized(i.waitingList) {
 						i.waitingList.put(customerID); // Add user to queue
 						System.out.println("User " + customerID.substring(0,7) + " added to queue. Current users in queue:");

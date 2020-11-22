@@ -1,16 +1,11 @@
 package a2;
 
-import java.io.File;
+import java.io.File; 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.Date;
 
 import org.omg.CosNaming.*;
-import org.omg.CosNaming.NamingContextPackage.*;
 import org.omg.CORBA.*;
 
 import DSMSApp.*;
@@ -63,7 +58,7 @@ public class DSMSManagerClient {
 	}
 
 
-	public boolean add(String itemID, String itemName, short quantity, double price) {
+	public String add(String itemID, String itemName, short quantity, double price) {
 
 		boolean status = false;
 
@@ -86,10 +81,10 @@ public class DSMSManagerClient {
 				e.printStackTrace();
 			}
 		}
-		return status;
+		return status?"success,"+itemID+","+itemName+","+quantity+","+price:"failure,"+itemID+","+itemName+","+quantity+","+price;
 	}
 
-	public boolean remove(String itemID, short quantity) {
+	public String remove(String itemID, short quantity) {
 		boolean status = false;
 
 		status = dsmsServant.removeItem(this.managerID, itemID, quantity).equals("true");
@@ -110,12 +105,22 @@ public class DSMSManagerClient {
 			}
 		}
 
-		return status;
+		return status?"success,"+itemID+","+quantity:"failure,"+itemID+","+quantity;
 	}
-	public void list() {
+	public String list() {
 
+		String result = "success(";
+		String items = dsmsServant.listItemAvailability(this.managerID);
+		String[] parseItems = items.split(":\\s|\n");
 
-		System.out.println(dsmsServant.listItemAvailability(this.managerID));
+		System.out.println(items);
+		
+		for(int i = 0; i < parseItems.length; i+=9) {
+			result += "\n" + parseItems[i+1] + "," + parseItems[i+3]
+					+ "," + parseItems[i+7] + "," + parseItems[i+5];
+		}
+		
+		result += ")";
 
 		// Write to file
 		synchronized(log) {
@@ -127,7 +132,9 @@ public class DSMSManagerClient {
 				writeManager.close();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}}
+			}
+		}
+		return result;
 
 	}
 
